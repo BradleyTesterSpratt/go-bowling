@@ -19,14 +19,14 @@ func take_turn(pinsToHit int) (int, string) {
   ballTwo := bowl(10-ballOne,pinsToHit)
   var result string
   if ballOne == 10 {
-    result := "strike"
+    result = "strike"
     fmt.Print("X ")
   } else {
     pinsDown += ballTwo
     fmt.Print(num_to_s(ballOne))
     if ballTwo == 10-ballOne {
       fmt.Print("/ ")
-      result := "spare"
+      result = "spare"
     } else if ballTwo == 0 {
       fmt.Print("- ")
     } else {
@@ -36,12 +36,16 @@ func take_turn(pinsToHit int) (int, string) {
   return pinsDown, result
 }
 
-func score_turn(pinsDown int, previousResult string) int {
+func score_turn(pinsDown int, previousResult string, result string) int {
   switch previousResult {
     case "strike":
-      return 10 + pinsDown
+      if result != "strike" {
+        return 10 + pinsDown
+      } else {
+        return 20 + pinsDown
+      }
     case "spare":
-      return 10 + pinsDown-1
+      return 10 + 5
     default:
       return pinsDown
   }
@@ -68,9 +72,20 @@ func play_frame(pinsToHit int) {
     var pins int
     var result string 
     pins, result = take_turn(pinsToHit)
-    score += score_turn(pins,previousResult)
-    previousResult=result
+    score += score_turn(pins,previousResult,result)
     i = i + 1
+    if i == 10 {
+      if result == "strike" {
+        pinsDown := bowl(10,pinsToHit)
+                fmt.Print(pinsDown)
+        if pinsDown == 10 {
+          previousResult = "strike"
+        }
+
+        score += score_turn(pinsDown,previousResult,result)
+      }
+    }
+    previousResult=result
   }
   fmt.Println(num_to_s(score))
 }
